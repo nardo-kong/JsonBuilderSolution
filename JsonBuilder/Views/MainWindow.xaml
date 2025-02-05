@@ -2,13 +2,59 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:JsonBuilder.ViewModels"
+        xmlns:vt="clr-namespace:JsonBuilder.Views.TemplateSelectors"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:mdc="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="JSON Builder" Height="650" Width="900">
+        xmlns:models="clr-namespace:JsonBuilder.Core.Models.Messages;assembly=JsonBuilder.Core"
+        Title="JSON Builder" Height="800" Width="1000">
 
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
+
+    <Window.Resources>
+        <!-- Pick Confirm 模板 -->
+        <DataTemplate x:Key="PickConfirmTemplate" DataType="{x:Type models:PickConfirmMessage}">
+            <ScrollViewer>
+                <StackPanel Margin="10" Width="400">
+                    <TextBox materialDesign:HintAssist.Hint="Box Number"
+                            Text="{Binding Params.box_number, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
+                    <TextBox materialDesign:HintAssist.Hint="Divert Time (yyyyMMddHHmmss)"
+                            Text="{Binding Params.divert_time}"
+                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            Margin="0 10"/>
+
+                    <TextBox materialDesign:HintAssist.Hint="Host Order ID"
+                            Text="{Binding Params.host_order_id}"
+                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
+
+        <!-- Line Response 模板 -->
+        <DataTemplate x:Key="LineResponseTemplate" DataType="{x:Type models:LineResponseMessage}">
+            <StackPanel Margin="10" Width="400">
+                <TextBox materialDesign:HintAssist.Hint="Host Line ID"
+                        Text="{Binding Params.host_line_id}"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
+                <TextBox materialDesign:HintAssist.Hint="Article ID"
+                        Text="{Binding Params.article_id}"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        Margin="0 10"/>
+
+                <TextBox materialDesign:HintAssist.Hint="Geo Code"
+                        Text="{Binding Params.geo_code}"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <vt:MessageTemplateSelector x:Key="MessageTemplateSelector"
+                                   PickConfirmTemplate="{StaticResource PickConfirmTemplate}"
+                                   LineResponseTemplate="{StaticResource LineResponseTemplate}"/>
+    </Window.Resources>
 
     <Grid Margin="15">
         <Grid.RowDefinitions>
@@ -31,23 +77,67 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <!-- 动态参数表单 -->
-        <ContentControl Grid.Row="1" 
-                        Content="{Binding CurrentMessage}"
-                        ContentTemplateSelector="{StaticResource MessageTemplateSelector}"/>
+        <!-- 主编辑区域 -->
+        <Grid Grid.Row="1" Margin="0 15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 嵌套项管理 -->
+            <mdc:Card Grid.Column="0" Margin="0 0 10 0">
+                <DockPanel>
+                    <TextBlock Text="Nested Items" 
+                             Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                             Margin="10"/>
+
+                    <ListBox ItemsSource="{Binding CurrentMessage.NestedMessages}"
+                           SelectedItem="{Binding SelectedNestedMessage}"
+                           Margin="10 0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Add" Width="20" Margin="0 0 5 0"/>
+                                    <TextBlock Text="{Binding MessageType}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <StackPanel DockPanel.Dock="Bottom" 
+                              Orientation="Horizontal" 
+                              HorizontalAlignment="Right"
+                              Margin="10">
+                        <Button Command="{Binding AddNestedItemCommand}"
+                                Style="{StaticResource MaterialDesignIconButton}"
+                                ToolTip="Add Line Response">
+                            <materialDesign:PackIcon Kind="Add" Width="20"/>
+                        </Button>
+                        <Button Command="{Binding RemoveNestedCommand}"
+                                Style="{StaticResource MaterialDesignIconButton}"
+                                Margin="5 0 0 0"
+                                ToolTip="Remove Selected">
+                            <materialDesign:PackIcon Kind="Delete" Width="20"/>
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+            </mdc:Card>
+
+            <!-- 参数编辑区 -->
+            <mdc:Card Grid.Column="1">
+                <ContentControl Content="{Binding CurrentMessage}"
+                              ContentTemplateSelector="{StaticResource MessageTemplateSelector}"
+                              Margin="10"/>
+            </mdc:Card>
+        </Grid>
 
         <!-- 操作按钮 -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Add Nested" 
-                    Command="{Binding AddNestedItemCommand}"
-                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                    Margin="0 0 10 0"
-                    ToolTip="Add a nested item for nested JSON generation"/>
-
             <Button Content="Generate JSON" 
                     Command="{Binding GenerateJsonCommand}"
                     Style="{StaticResource MaterialDesignRaisedButton}"
-                    ToolTip="Generate the JSON based on the current input"/>
+                    Margin="0 0 10 0"
+                    Width="120"/>
         </StackPanel>
 
         <!-- JSON 输出窗口 -->

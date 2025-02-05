@@ -9,6 +9,7 @@ namespace JsonBuilder.Views.TemplateSelectors
         public DataTemplate DefaultTemplate { get; set; }
         public DataTemplate PickConfirmTemplate { get; set; }
         public DataTemplate OrderInsertTemplate { get; set; }
+        public DataTemplate LineResponseTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -16,6 +17,7 @@ namespace JsonBuilder.Views.TemplateSelectors
             {
                 PickConfirmMessage _ => PickConfirmTemplate,
                 OrderInsertMessage _ => OrderInsertTemplate,
+                LineResponseMessage _ => LineResponseTemplate,
                 _ => DefaultTemplate ?? base.SelectTemplate(item, container)
             };
         }

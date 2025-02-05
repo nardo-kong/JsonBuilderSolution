@@ -18,6 +18,9 @@ namespace JsonBuilder.Core.Models.Messages
         public override string MessageType => "pick_confirm";
 
         public override MessageBase CreateNewInstance() => new PickConfirmMessage();
+
+        [JsonProperty("parameters")]
+        public PickConfirmParams Params { get; set; } = new();
     }
 
     public class PickConfirmParams

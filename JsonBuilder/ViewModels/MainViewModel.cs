@@ -4,6 +4,7 @@ using JsonBuilder.Core.Models;
 using JsonBuilder.Core.Models.Messages;
 using JsonBuilder.Core.Utilities;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace JsonBuilder.ViewModels
 {
@@ -13,12 +14,20 @@ namespace JsonBuilder.ViewModels
         [ObservableProperty]
         private MessageBase? _selectedMessageType;
 
-        // 所有可用消息类型集合
-        public ObservableCollection<MessageBase> MessageTypes { get; } = new();
-
         // 当前正在编辑的消息对象
         [ObservableProperty]
         private MessageBase? _currentMessage;
+
+        // 添加新属性
+        [ObservableProperty]
+        private MessageBase? _selectedNestedMessage;
+
+        // 所有可用消息类型集合
+        public ObservableCollection<MessageBase> MessageTypes { get; } = new();
+
+        // JSON 输出内容
+        [ObservableProperty]
+        private string _outputJson = string.Empty;
 
         public MainViewModel()
         {
@@ -30,6 +39,7 @@ namespace JsonBuilder.ViewModels
             // 初始化预定义消息类型
             MessageTypes.Add(new PickConfirmMessage());
             MessageTypes.Add(new OrderInsertMessage());
+            Debug.WriteLine($"Initialized {MessageTypes.Count} message types");
         }
 
         [RelayCommand]
@@ -37,7 +47,7 @@ namespace JsonBuilder.ViewModels
         {
             if (CurrentMessage != null)
             {
-                var nested = new PickConfirmMessage(); // 可替换为动态选择
+                var nested = new LineResponseMessage(); // 添加 LineResponse 嵌套项
                 CurrentMessage.NestedMessages.Add(nested);
             }
         }
@@ -45,16 +55,36 @@ namespace JsonBuilder.ViewModels
         [RelayCommand]
         private void GenerateJson()
         {
-            if (CurrentMessage == null) return;
+            if (CurrentMessage == null)
+            {
+                OutputJson = "Error: No message selected";
+                return;
+            }
 
-            var json = JsonGenerator.Generate(CurrentMessage);
-            // 这里可以添加输出到UI或文件的逻辑
+            try
+            {
+                OutputJson = JsonGenerator.Generate(CurrentMessage);
+            }
+            catch (Exception ex)
+            {
+                OutputJson = $"Generation Error:\n{ex.Message}";
+            }
+        }
+
+        [RelayCommand]
+        private void RemoveNested()
+        {
+            if (CurrentMessage != null && SelectedNestedMessage != null)
+            {
+                CurrentMessage.NestedMessages.Remove(SelectedNestedMessage);
+            }
         }
 
         // 当选择消息类型时自动创建新实例
-        partial void OnSelectedMessageTypeChanged(MessageBase? value)
+        partial void OnSelectedMessageTypeChanged(MessageBase? oldValue, MessageBase? newValue)
         {
-            CurrentMessage = value?.CreateNewInstance();
+            CurrentMessage = newValue?.CreateNewInstance();
+            OutputJson = string.Empty;
         }
     }
 }
