@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace JsonBuilder.Core.Models
 {
@@ -7,12 +8,12 @@ namespace JsonBuilder.Core.Models
     {
         protected MessageBase()
         {
-            NestedMessages = new List<MessageBase>();
+            NestedMessages = new ObservableCollection<MessageBase>();
             Parameters = new Dictionary<string, object>();
         }
 
         [JsonProperty("nested")]
-        public List<MessageBase> NestedMessages { get; set; }
+        public ObservableCollection<MessageBase> NestedMessages { get; set; }
 
         [JsonProperty("messagetype")]
         public abstract string MessageType { get; }

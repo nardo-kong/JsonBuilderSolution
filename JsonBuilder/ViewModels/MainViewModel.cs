@@ -49,6 +49,15 @@ namespace JsonBuilder.ViewModels
             {
                 var nested = new LineResponseMessage(); // 添加 LineResponse 嵌套项
                 CurrentMessage.NestedMessages.Add(nested);
+                SelectedNestedMessage = nested;
+                Debug.WriteLine(CurrentMessage.NestedMessages[0].MessageType);
+                if (CurrentMessage.NestedMessages.Any(message => message == null))
+                {
+                    Debug.WriteLine("NestedMessages contains null items");
+                } else
+                {
+                    Debug.WriteLine("NestedMessages not null items");
+                }
             }
         }
 
@@ -70,13 +79,13 @@ namespace JsonBuilder.ViewModels
                 OutputJson = $"Generation Error:\n{ex.Message}";
             }
         }
-
         [RelayCommand]
         private void RemoveNested()
         {
             if (CurrentMessage != null && SelectedNestedMessage != null)
             {
                 CurrentMessage.NestedMessages.Remove(SelectedNestedMessage);
+                SelectedNestedMessage = null;
             }
         }
 

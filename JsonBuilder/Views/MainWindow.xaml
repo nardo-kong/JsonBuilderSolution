@@ -6,7 +6,8 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:mdc="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:models="clr-namespace:JsonBuilder.Core.Models.Messages;assembly=JsonBuilder.Core"
-        Title="JSON Builder" Height="800" Width="1000">
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        Title="JSON Builder" Height="650" Width="1000">
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -81,53 +82,82 @@
         <Grid Grid.Row="1" Margin="0 15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- 嵌套项管理 -->
             <mdc:Card Grid.Column="0" Margin="0 0 10 0">
-                <DockPanel>
-                    <TextBlock Text="Nested Items" 
-                             Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                             Margin="10"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
+                    <!-- 标题 -->
+                    <TextBlock Text="Nested Items" 
+                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                   Margin="10"
+                   Grid.Row="0"/>
+
+                    <!-- 嵌套项列表 -->
                     <ListBox ItemsSource="{Binding CurrentMessage.NestedMessages}"
-                           SelectedItem="{Binding SelectedNestedMessage}"
-                           Margin="10 0">
+                        SelectedItem="{Binding SelectedNestedMessage, Mode=TwoWay}"
+                        HorizontalAlignment="Stretch"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        Background="{DynamicResource MaterialDesignPaper}"
+                        Margin="10"
+                        Grid.Row="1">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Add" Width="20" Margin="0 0 5 0"/>
-                                    <TextBlock Text="{Binding MessageType}"/>
+                                    <materialDesign:PackIcon Kind="Edit" Width="20" Margin="0 0 5 0"/>
+                                    <TextBlock Text="{Binding MessageType, diag:PresentationTraceSources.TraceLevel=High}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
 
-                    <StackPanel DockPanel.Dock="Bottom" 
-                              Orientation="Horizontal" 
-                              HorizontalAlignment="Right"
-                              Margin="10">
+                    <!-- 操作按钮 -->
+                    <StackPanel Grid.Row="2" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right"
+                        Margin="10">
                         <Button Command="{Binding AddNestedItemCommand}"
-                                Style="{StaticResource MaterialDesignIconButton}"
-                                ToolTip="Add Line Response">
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            ToolTip="Add Line Response">
                             <materialDesign:PackIcon Kind="Add" Width="20"/>
                         </Button>
                         <Button Command="{Binding RemoveNestedCommand}"
-                                Style="{StaticResource MaterialDesignIconButton}"
-                                Margin="5 0 0 0"
-                                ToolTip="Remove Selected">
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            Margin="5 0 0 0"
+                            ToolTip="Remove Selected">
                             <materialDesign:PackIcon Kind="Delete" Width="20"/>
                         </Button>
                     </StackPanel>
-                </DockPanel>
+                </Grid>
             </mdc:Card>
 
             <!-- 参数编辑区 -->
             <mdc:Card Grid.Column="1">
-                <ContentControl Content="{Binding CurrentMessage}"
-                              ContentTemplateSelector="{StaticResource MessageTemplateSelector}"
-                              Margin="10"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 当前消息参数 -->
+                    <ContentControl Grid.Row="0"
+                      Content="{Binding CurrentMessage}"
+                      ContentTemplateSelector="{StaticResource MessageTemplateSelector}"
+                      Margin="10"/>
+
+                    <!-- 嵌套项参数 -->
+                    <ContentControl Grid.Row="1"
+                      Content="{Binding SelectedNestedMessage}"
+                      ContentTemplateSelector="{StaticResource MessageTemplateSelector}"
+                      Margin="10"/>
+                </Grid>
             </mdc:Card>
         </Grid>
 

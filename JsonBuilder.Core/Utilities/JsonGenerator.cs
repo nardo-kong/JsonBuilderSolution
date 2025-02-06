@@ -3,6 +3,7 @@ using JsonBuilder.Core.Models;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Linq;
 using JsonBuilder.Core.Models.Messages;
+using System.Collections.ObjectModel;
 
 namespace JsonBuilder.Core.Utilities
 {
@@ -91,12 +92,15 @@ namespace JsonBuilder.Core.Utilities
             };
         }
 
-        private static List<MessageBase> ParseNested(JArray? nestedArray)
+        private static ObservableCollection<MessageBase> ParseNested(JArray? nestedArray)
         {
             // 嵌套解析逻辑（示例）
-            return nestedArray?.Select(token => token.ToObject<MessageBase>()!)
-                              .Where(message => message != null)
-                              .ToList() ?? new List<MessageBase>();
+            var list = nestedArray?.Select(token => token.ToObject<MessageBase>()!)
+                                  .Where(message => message != null)
+                                  .ToList() ?? new List<MessageBase>();
+
+            // 将 List<MessageBase> 转换为 ObservableCollection<MessageBase>
+            return new ObservableCollection<MessageBase>(list);
         }
     }
 }
