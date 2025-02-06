@@ -36,20 +36,22 @@
 
         <!-- Line Response 模板 -->
         <DataTemplate x:Key="LineResponseTemplate" DataType="{x:Type models:LineResponseMessage}">
-            <StackPanel Margin="10" Width="400">
-                <TextBox materialDesign:HintAssist.Hint="Host Line ID"
+            <ScrollViewer>
+                <StackPanel Margin="10" Width="400">
+                    <TextBox materialDesign:HintAssist.Hint="Host Line ID"
                         Text="{Binding Params.host_line_id}"
                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
 
-                <TextBox materialDesign:HintAssist.Hint="Article ID"
+                    <TextBox materialDesign:HintAssist.Hint="Article ID"
                         Text="{Binding Params.article_id}"
                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                         Margin="0 10"/>
 
-                <TextBox materialDesign:HintAssist.Hint="Geo Code"
+                    <TextBox materialDesign:HintAssist.Hint="Geo Code"
                         Text="{Binding Params.geo_code}"
                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-            </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
         </DataTemplate>
 
         <vt:MessageTemplateSelector x:Key="MessageTemplateSelector"
