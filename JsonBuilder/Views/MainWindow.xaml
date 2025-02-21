@@ -7,7 +7,7 @@
         xmlns:mdc="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:models="clr-namespace:JsonBuilder.Core.Models.Messages;assembly=JsonBuilder.Core"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-        Title="JSON Builder" Height="650" Width="1000">
+        Title="JSON Builder" Height="800" Width="1000">
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -19,17 +19,33 @@
             <ScrollViewer>
                 <StackPanel Margin="10" Width="400">
                     <TextBox materialDesign:HintAssist.Hint="Box Number"
-                            Text="{Binding Params.box_number, UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-
+                             Text="{Binding Parameters.BoxNumber, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             />
                     <TextBox materialDesign:HintAssist.Hint="Divert Time (yyyyMMddHHmmss)"
-                            Text="{Binding Params.divert_time}"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                            Margin="0 10"/>
-
+                             Text="{Binding Parameters.DivertTime}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             />
+                    <TextBox materialDesign:HintAssist.Hint="Weight"
+                             Text="{Binding Parameters.Weight}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             />
+                    <TextBox materialDesign:HintAssist.Hint="Transferid"
+                             Text="{Binding Parameters.TransferId}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             />
+                    <TextBox materialDesign:HintAssist.Hint="Customer code"
+                             Text="{Binding Parameters.CustomerCode}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             />
+                    <TextBox materialDesign:HintAssist.Hint="uuid"
+                             Text="{Binding Parameters.Uuid}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             />
                     <TextBox materialDesign:HintAssist.Hint="Host Order ID"
-                            Text="{Binding Params.host_order_id}"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                             Text="{Binding Parameters.HostOrderId}"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             />
                 </StackPanel>
             </ScrollViewer>
         </DataTemplate>
@@ -39,16 +55,22 @@
             <ScrollViewer>
                 <StackPanel Margin="10" Width="400">
                     <TextBox materialDesign:HintAssist.Hint="Host Line ID"
-                        Text="{Binding Params.host_line_id}"
+                        Text="{Binding Parameters.HostLineId}"
                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-
                     <TextBox materialDesign:HintAssist.Hint="Article ID"
-                        Text="{Binding Params.article_id}"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Margin="0 10"/>
-
+                        Text="{Binding Parameters.ArticleId}"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
                     <TextBox materialDesign:HintAssist.Hint="Geo Code"
-                        Text="{Binding Params.geo_code}"
+                        Text="{Binding Parameters.GeoCode}"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <TextBox materialDesign:HintAssist.Hint="ordered_packunits"
+                        Text="{Binding Parameters.OrderedPackunits}"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <TextBox materialDesign:HintAssist.Hint="picked_packunits"
+                        Text="{Binding Parameters.PickedPackunits, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <TextBox materialDesign:HintAssist.Hint="packunit_size"
+                        Text="{Binding Parameters.PackunitSize}"
                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
                 </StackPanel>
             </ScrollViewer>
@@ -82,10 +104,10 @@
         </ComboBox>
 
         <!-- 主编辑区域 -->
-        <Grid Grid.Row="1" Margin="0 15">
+        <Grid Grid.Row="1" Margin="0 5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
 
             <!-- 嵌套项管理 -->
@@ -100,7 +122,7 @@
                     <!-- 标题 -->
                     <TextBlock Text="Nested Items" 
                    Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                   Margin="10"
+                   Margin="10 5"
                    Grid.Row="0"/>
 
                     <!-- 嵌套项列表 -->
@@ -109,13 +131,13 @@
                         HorizontalAlignment="Stretch"
                         ScrollViewer.VerticalScrollBarVisibility="Auto"
                         Background="{DynamicResource MaterialDesignPaper}"
-                        Margin="10"
+                        Margin="10 5"
                         Grid.Row="1">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="Edit" Width="20" Margin="0 0 5 0"/>
-                                    <TextBlock Text="{Binding MessageType, diag:PresentationTraceSources.TraceLevel=High}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MessageType, diag:PresentationTraceSources.TraceLevel=High}" VerticalAlignment="Center" FontSize="14"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -125,7 +147,7 @@
                     <StackPanel Grid.Row="2" 
                         Orientation="Horizontal" 
                         HorizontalAlignment="Right"
-                        Margin="10">
+                        Margin="5">
                         <Button Command="{Binding AddNestedItemCommand}"
                             Style="{StaticResource MaterialDesignIconButton}"
                             ToolTip="Add Line Response">
@@ -144,22 +166,40 @@
             <!-- 参数编辑区 -->
             <mdc:Card Grid.Column="1">
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="9*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="4*"/>
+                            <RowDefinition Height="5*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <TextBlock Text="Box" VerticalAlignment="Center" Margin="20 0 0 0" FontSize="16"/>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <TextBlock Text="Item" VerticalAlignment="Center" Margin="20 0 0 0" FontSize="16"/>
+                        </Grid>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="4*"/>
+                            <RowDefinition Height="5*"/>
+                        </Grid.RowDefinitions>
 
-                    <!-- 当前消息参数 -->
-                    <ContentControl Grid.Row="0"
-                      Content="{Binding CurrentMessage}"
-                      ContentTemplateSelector="{StaticResource MessageTemplateSelector}"
-                      Margin="10"/>
+                        <!-- 当前消息参数 -->
+                        <ContentControl Grid.Row="0"
+                          Content="{Binding CurrentMessage}"
+                          ContentTemplateSelector="{StaticResource MessageTemplateSelector}"
+                          Margin="10"/>
 
-                    <!-- 嵌套项参数 -->
-                    <ContentControl Grid.Row="1"
-                      Content="{Binding SelectedNestedMessage}"
-                      ContentTemplateSelector="{StaticResource MessageTemplateSelector}"
-                      Margin="10"/>
+                        <!-- 嵌套项参数 -->
+                        <ContentControl Grid.Row="1"
+                          Content="{Binding SelectedNestedMessage}"
+                          ContentTemplateSelector="{StaticResource MessageTemplateSelector}"
+                          Margin="10"/>
+                    </Grid>
                 </Grid>
             </mdc:Card>
         </Grid>
@@ -169,12 +209,12 @@
             <Button Content="Generate JSON" 
                     Command="{Binding GenerateJsonCommand}"
                     Style="{StaticResource MaterialDesignRaisedButton}"
-                    Margin="0 0 10 0"
+                    Margin="0 10 20 10"
                     Width="120"/>
         </StackPanel>
 
         <!-- JSON 输出窗口 -->
-        <mdc:Card Grid.Row="3" Margin="0 15">
+        <mdc:Card Grid.Row="3" Margin="0 5">
             <ScrollViewer>
                 <TextBox Text="{Binding OutputJson, Mode=OneWay}"
                 Style="{StaticResource MaterialDesignOutlinedTextBox}"

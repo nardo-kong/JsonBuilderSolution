@@ -5,6 +5,7 @@ using JsonBuilder.Core.Models.Messages;
 using JsonBuilder.Core.Utilities;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows;
 
 namespace JsonBuilder.ViewModels
 {
@@ -50,7 +51,6 @@ namespace JsonBuilder.ViewModels
                 var nested = new LineResponseMessage(); // 添加 LineResponse 嵌套项
                 CurrentMessage.NestedMessages.Add(nested);
                 SelectedNestedMessage = nested;
-                Debug.WriteLine(CurrentMessage.NestedMessages[0].MessageType);
                 if (CurrentMessage.NestedMessages.Any(message => message == null))
                 {
                     Debug.WriteLine("NestedMessages contains null items");
@@ -67,6 +67,16 @@ namespace JsonBuilder.ViewModels
             if (CurrentMessage == null)
             {
                 OutputJson = "Error: No message selected";
+                return;
+            }
+
+            // 校验所有参数非空
+            Dictionary<string, object> validatedParameters;
+            IList<string> errorMessages;
+            bool isValid = ParameterValidation.ValidateAllParameters(CurrentMessage, out validatedParameters, out errorMessages);
+            if (!isValid)
+            {
+                OutputJson = $"Validation Error:\n{string.Join("\n", errorMessages)}";
                 return;
             }
 
@@ -95,5 +105,8 @@ namespace JsonBuilder.ViewModels
             CurrentMessage = newValue?.CreateNewInstance();
             OutputJson = string.Empty;
         }
+
+        
+        
     }
 }

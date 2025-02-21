@@ -13,7 +13,7 @@ namespace JsonBuilder.Core.Utilities
         {
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new OrderedContractResolver() // 使用自定义的 ContractResolver
         };
 
         public static string Generate(MessageBase message)
@@ -59,17 +59,18 @@ namespace JsonBuilder.Core.Utilities
                 return;
             }
 
-            JObject obj = new JObject
-            {
-                ["messagetype"] = value.MessageType,
-                ["nested"] = JArray.FromObject(value.NestedMessages, serializer)
-            };
+            JObject obj = new JObject();
 
-            var parameters = value.GetType().GetProperty("Params")?.GetValue(value);
+            // 按順序添加屬性：nested -> parameters -> messagetype
+            obj["nested"] = JArray.FromObject(value.NestedMessages, serializer);
+
+            var parameters = value.GetType().GetProperty("Parameters")?.GetValue(value);
             if (parameters != null)
             {
                 obj["parameters"] = JObject.FromObject(parameters, serializer);
             }
+
+            obj["messagetype"] = value.MessageType;
 
             obj.WriteTo(writer);
         }
@@ -78,7 +79,7 @@ namespace JsonBuilder.Core.Utilities
         {
             return new PickConfirmMessage
             {
-                Params = obj["parameters"]?.ToObject<PickConfirmParams>() ?? new(),
+                Parameters = obj["parameters"]?.ToObject<PickConfirmParams>() ?? new(),
                 NestedMessages = ParseNested(obj["nested"] as JArray)
             };
         }
@@ -87,7 +88,7 @@ namespace JsonBuilder.Core.Utilities
         {
             return new LineResponseMessage
             {
-                Params = obj["parameters"]?.ToObject<LineResponseParams>() ?? new(),
+                Parameters = obj["parameters"]?.ToObject<LineResponseParams>() ?? new(),
                 NestedMessages = ParseNested(obj["nested"] as JArray)
             };
         }
@@ -101,6 +102,19 @@ namespace JsonBuilder.Core.Utilities
 
             // 将 List<MessageBase> 转换为 ObservableCollection<MessageBase>
             return new ObservableCollection<MessageBase>(list);
+        }
+
+    }
+
+    //自定義ContractResolver確保參數類屬性順序
+    public class OrderedContractResolver : DefaultContractResolver
+    {
+        protected override IList<JsonProperty> CreateProperties(System.Type type, MemberSerialization memberSerialization)
+        {
+            return base.CreateProperties(type, memberSerialization)
+                .OrderBy(p => p.Order ?? int.MaxValue)  // 使用JsonProperty.Order
+                .ThenBy(p => p.PropertyName)
+                .ToList();
         }
     }
 }

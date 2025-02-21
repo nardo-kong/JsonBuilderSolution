@@ -5,14 +5,6 @@ namespace JsonBuilder.Core.Models.Messages
 {
     public class OrderInsertMessage : MessageBase
     {
-        public OrderInsertMessage()
-        {
-            Parameters = new Dictionary<string, object>
-            {
-                { "transferid", 1000001 },
-                { "uuid", Guid.NewGuid().ToString() }
-            };
-        }
 
         public override string MessageType => "order_insert";
 
