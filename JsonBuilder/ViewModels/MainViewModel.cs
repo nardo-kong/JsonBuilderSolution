@@ -98,6 +98,15 @@ namespace JsonBuilder.ViewModels
                 SelectedNestedMessage = null;
             }
         }
+        [RelayCommand]
+        private void Copy()
+        {
+            if (OutputJson != null)
+            {
+                // 复制 OutputJson 的值到剪贴板
+                Clipboard.SetDataObject(OutputJson);
+            }
+        }
 
         // 当选择消息类型时自动创建新实例
         partial void OnSelectedMessageTypeChanged(MessageBase? oldValue, MessageBase? newValue)
@@ -106,7 +115,7 @@ namespace JsonBuilder.ViewModels
             OutputJson = string.Empty;
         }
 
-        
-        
+
+
     }
 }
