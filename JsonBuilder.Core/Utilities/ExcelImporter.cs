@@ -18,6 +18,11 @@ namespace JsonBuilder.Core.Utilities
             var pickConfirmMessage = new PickConfirmMessage();
             pickConfirmMessage._params = new PickConfirmParams();
 
+            pickConfirmMessage._params.DivertTime = DateTime.Now.ToString("yyyyMMddHHmmss");
+            pickConfirmMessage._params.Weight = "6000";
+            pickConfirmMessage._params.TransferId = "26" + DateTime.Now.ToString("HHmmss");
+            pickConfirmMessage._params.Uuid = Guid.NewGuid().ToString();
+
             // 使用 EPPlus 打开 Excel 文件
             using (var package = new ExcelPackage(new FileInfo(filePath)))
             {
