@@ -30,6 +30,8 @@ namespace JsonBuilder.ViewModels
         [ObservableProperty]
         private string _outputJson = string.Empty;
 
+        private bool _isImporting = false;
+
         public MainViewModel()
         {
             InitializeMessageTypes();
@@ -105,14 +107,44 @@ namespace JsonBuilder.ViewModels
             {
                 // 复制 OutputJson 的值到剪贴板
                 Clipboard.SetDataObject(OutputJson);
+                Debug.WriteLine($"Sele is {SelectedMessageType}");
+            }
+        }
+        [RelayCommand]
+        private void Import()
+        {
+            // 打开文件选择对话框
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Excel 文件 (*.xlsx)|*.xlsx|所有文件 (*.*)|*.*"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string filePath = openFileDialog.FileName;
+
+                // 调用 ExcelImporter 读取数据
+                var excelImporter = new ExcelImporter();
+                var pickConfirmMessage = excelImporter.ImportDataFromExcel(filePath);
+                _isImporting = true;
+                CurrentMessage = pickConfirmMessage;
+                SelectedMessageType = CurrentMessage;
+                OutputJson = string.Empty;
+                Debug.WriteLine($"Import as message type: {SelectedMessageType.MessageType}");
             }
         }
 
         // 当选择消息类型时自动创建新实例
         partial void OnSelectedMessageTypeChanged(MessageBase? oldValue, MessageBase? newValue)
         {
+            if (_isImporting) {
+                _isImporting = false;
+                Debug.WriteLine($"Importing {SelectedMessageType}");
+                return;
+            }
             CurrentMessage = newValue?.CreateNewInstance();
             OutputJson = string.Empty;
+            Debug.WriteLine($"Selected message type: {SelectedMessageType}");
         }
 
 

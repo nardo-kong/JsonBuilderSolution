@@ -109,7 +109,7 @@
 
         <!-- 消息类型选择 -->
         <ComboBox ItemsSource="{Binding MessageTypes}"
-                  SelectedItem="{Binding SelectedMessageType}"
+                  SelectedItem="{Binding SelectedMessageType, UpdateSourceTrigger=PropertyChanged}"
                   materialDesign:HintAssist.Hint="Select message type"
                   Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                   Margin="0 0 0 10">
@@ -243,8 +243,15 @@
 
         <!-- 操作按钮 -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button
-                Content="Copy"
+            <Button Content="Import" 
+                    Command="{Binding ImportCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Margin="20 20 20 10"
+                    Background="#5DADE2"
+                    BorderBrush="#5DADE2"
+                    Width="Auto"
+                    />
+            <Button Content="Copy"
                 Command="{Binding CopyCommand}"
                 Style="{StaticResource MaterialDesignRaisedButton}"
                 Margin="20 20 20 10"
