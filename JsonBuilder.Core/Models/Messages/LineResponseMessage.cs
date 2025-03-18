@@ -37,5 +37,5 @@ public class LineResponseParams : MessageParamBase
     public string PickedPackunits { get; set; } = "";
 
     [JsonProperty(PropertyName = "packunit_size", Order = 6)]
-    public string PackunitSize { get; set; } = "";
+    public string PackunitSize { get; set; } = "1";
 }
